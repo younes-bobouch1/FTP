@@ -1,0 +1,29 @@
+<Anonymous ~ftp>
+   User                         ftp
+   Group                                nogroup
+   UserAlias                    anonymous ftp
+   DirFakeUser  on ftp
+   DirFakeGroup on ftp
+   RequireValidShell            off
+
+   MaxClients                   10
+
+   DisplayLogin                 welcome.msg
+   DisplayChdir         .message
+   <Limit LOGIN>
+    AllowAll
+   </Limit>
+   <Directory *>
+     <Limit WRITE>
+       DenyAll
+     </Limit>
+   </Directory>
+</Anonymous>
+
+TLSOptions NoSessionReuseRequired
+TLSEngine on
+TLSRequired on
+TLSRSACertificateFile /etc/proftpd/ssl/proftpd-rsa.pem
+TLSRSACertificateKeyFile /etc/proftpd/ssl/proftpd-key.pem
+TLSLog /var/log/proftpd/tls.log 
+#Done

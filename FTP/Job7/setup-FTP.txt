@@ -1,0 +1,44 @@
+#!/bin/bash
+
+echo "Setup FTP (utilisateur root requis)"
+echo " "
+echo "Ecrire '1' pour installer et configurer FTP"
+echo "Ecrire '2' pour désinstaller FTP"
+echo "Ecrire '3' pour ne rien faire et quitter le script"
+echo "------------------------------------"
+echo "Votre choix : " | tr -d '\n';
+read option;
+
+if [ $option = 1 ]
+then
+    apt-get -y update ; sudo apt-get -y upgrade ; sudo apt-get -y install proftpd ; sudo -y apt-get git
+    cp /etc/proftpd/proftpd.conf /etc/proftpd/proftpd.conf.back
+    git clone https://github.com/remi-vidal-michel/referencecfg.git
+    cat referencecfg/referencecfg.txt > /etc/proftpd/proftpd.conf
+    mkdir -p /etc/proftpd/ssl
+    openssl req -x509 -nodes -days 365 -newkey rsa:4096 -out /etc/proftpd/ssl/proftpd-rsa.pem -keyout /etc/proftpd/ssl/proftpd-key.pem \
+    -subj "/C=''/ST=''/L=''/O=''/OU=''/CN=''" 
+    chmod 440 /etc/proftpd/ssl/proftpd-key.pem
+    rm -r referencecfg
+    service proftpd restart
+    echo "FTP est dorénavant configuré et actif."
+    ip=$(hostname -I | cut -f1 -d' ')
+    echo "Votre IP est $ip"
+
+elif [ $option = 2 ]
+then
+    apt-get -y remove proftpd-*
+    apt-get -y purge proftpd-*
+    echo " "
+    echo "FTP a bien été désinstallé."
+
+elif [ $option = 3 ]
+then
+    exit
+
+else
+    echo "Erreur : Veuillez écrire 1, 2 ou 3"
+fi
+
+# cd /mnt/c/Users/remiv/Documents/git-hub/ftp/referencecfg/
+# sh setup-ftp.sh
